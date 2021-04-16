@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_16_144055) do
+ActiveRecord::Schema.define(version: 2021_04_16_144324) do
+
+  create_table "questions", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "category_id"
+    t.text "comment"
+    t.string "image"
+    t.string "bestanswer_id"
+  end
 
   create_table "tips", force: :cascade do |t|
     t.integer "user_id"
