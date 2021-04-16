@@ -8,5 +8,9 @@ require 'sinatra/activerecord'
 require 'pry'
 
 get '/' do
+    "Hello World!"
+end
+
+get '/login' do
     
 end
