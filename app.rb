@@ -11,6 +11,5 @@ get '/' do
     "Hello World!"
 end
 
-get '/login' do
-    
+post '/tips/create/:user_id' do
 end
