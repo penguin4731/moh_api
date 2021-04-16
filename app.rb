@@ -12,10 +12,18 @@ get '/' do
 end
 
 post '/tips/create/:user_id' do
+    img_url = ''
+    if params[:image]
+        img = params[:file]
+        tempfile = img[:tempfile]
+        upload = Cloudinary::Uploader.upload(tempfile.path)
+        img_url = upload['url']
+    end
+
     Tip.create(
         user_id: params[:user_id],
         category_id: params[:category_id],
         comment: params[:comment],
-        image: 
+        image: img_url
     )
 end
