@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_16_145152) do
+ActiveRecord::Schema.define(version: 2021_04_16_151129) do
 
   create_table "answers", force: :cascade do |t|
     t.integer "user_id"
@@ -29,6 +29,12 @@ ActiveRecord::Schema.define(version: 2021_04_16_145152) do
     t.text "comment"
     t.string "image"
     t.string "bestanswer_id"
+  end
+
+  create_table "refers", force: :cascade do |t|
+    t.boolean "type"
+    t.integer "category_id"
+    t.integer "post_id"
   end
 
   create_table "tips", force: :cascade do |t|
