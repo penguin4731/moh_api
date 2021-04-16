@@ -5,6 +5,7 @@ require 'open-uri'
 require "sinatra/json"
 require './models/models.rb'
 require 'sinatra/activerecord'
+require 'json'
 
 before do
     Dotenv.load
@@ -16,9 +17,14 @@ before do
 end
 
 get '/' do
-    "Hello World!"
+end
+#全てのtipsを表示させるルーティング
+get '/tips/all' do
+    
+    tips.to_json
 end
 
+#tipsを作るルーティング
 post '/tips/create/:user_id' do
     img_url = ''
     if params[:image]
@@ -27,7 +33,6 @@ post '/tips/create/:user_id' do
         upload = Cloudinary::Uploader.upload(tempfile.path)
         img_url = upload['url']
     end
-
     Tip.create(
         user_id: params[:user_id],
         category_id: params[:category_id],
