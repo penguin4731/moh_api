@@ -12,4 +12,10 @@ get '/' do
 end
 
 post '/tips/create/:user_id' do
+    Tip.create(
+        user_id: params[:user_id],
+        category_id: params[:category_id],
+        comment: params[:comment],
+        image: 
+    )
 end
