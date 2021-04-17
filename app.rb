@@ -24,6 +24,21 @@ error do
     status 500
 end
 
+#referテーブルを作成するルーティング
+post '/create/refers/:id' do
+    category = Category.find_by(name: params[:name])
+    if category.nil?
+        Category.create(
+            name: params[:name]
+        )
+    end
+    Refer.create(
+        post_id: params[:id],
+        category_id: Category.find_by(name: params[:name]).id
+    )
+    json({ ok: true })
+end
+
 #全てのtipsを返すルーティング
 get '/tips/all' do
     tips = Tip.all
