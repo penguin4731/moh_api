@@ -58,7 +58,7 @@ get '/tips/replies/:tips_id' do
 end
 
 #repliesを作るルーティング
-post '/reply/create/:user_id' do
+post '/tips/reply/create/:user_id' do
     img_url = ''
     if params[:image]
         img = params[:file]
