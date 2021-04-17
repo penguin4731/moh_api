@@ -20,11 +20,6 @@ error do
     status 500
 end
 
-post '/' do
-    status 200
-    json({ ok: true, status: 'home' })
-end
-
 #全てのtipsを返すルーティング
 get '/tips/all' do
     tips = Tip.all
@@ -37,17 +32,13 @@ end
 
 #tipsを作るルーティング
 post '/tips/create/:user_id' do
-    if params[:comment] == nil
-        status 500
-    else
-        Tip.create(
-            user_id: params['user_id'],
-            comment: params['comment'],
-            title: params['title']
-        )
-        status 200
-        json({ ok: true, status: 'success' })
-    end
+    Tip.create(
+        user_id: params[:user_id],
+        comment: params[:comment],
+        title: params[:title]
+    )
+    status 200
+    json({ ok: true, status: 'success' })
 end
 
 #tips_repliesを返すルーティング
