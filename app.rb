@@ -16,6 +16,10 @@ before do
     end
 end
 
+not_found do
+    status 404
+end
+
 error do
     status 500
 end
@@ -32,16 +36,22 @@ end
 
 #tipsを作るルーティング
 post '/tips/create/:user_id' do
-    Tip.create(
-        user_id: params[:user_id],
-        comment: params[:comment],
-        title: params[:title]
-    )
-    status 200
-    json({ ok: true, status: 'success' })
+    if firebase_uid_to_uid(params[:user_id])
+        user_id = firebase_uid_to_uid(params[:user_id])
+        Tip.create(
+            user_id: user_id,
+            comment: params[:comment],
+            title: params[:title]
+        )
+        status 200
+        json({ ok: true })
+    else
+        status 400
+        json({ ok: false })
+    end
 end
 
-#tips_repliesを返すルーティング
+#tips_repliesを返すルーティング 削除予定
 get '/tips/replies/:tips_id' do
     replies = Tip_reply.find_by(tip_id: params[:tips_id])
     if replies.empty?
@@ -53,19 +63,27 @@ end
 
 #repliesを作るルーティング
 post '/tips/reply/create/:user_id' do
-    img_url = ''
-    if params[:image]
-        img = params[:file]
-        tempfile = img[:tempfile]
-        upload = Cloudinary::Uploader.upload(tempfile.path)
-        img_url = upload['url']
+    if firebase_uid_to_uid(params[:user_id])
+        user_id = firebase_uid_to_uid(params[:user_id])
+        img_url = ''
+        if params[:image]
+            img = params[:file]
+            tempfile = img[:tempfile]
+            upload = Cloudinary::Uploader.upload(tempfile.path)
+            img_url = upload['url']
+        end
+        Tip_reply.create(
+            user_id: user_id,
+            tip_id: params[:tip_id],
+            comment: params[:comment],
+            image: img_url
+        )
+        status 200
+        json({ ok: true })
+    else
+        status 400
+        json({ ok: false })
     end
-    Tip_reply.create(
-        user_id: params[:user_id],
-        tip_id: params[:tip_id],
-        comment: params[:comment],
-        image: img_url
-    )
 end
 
 #questionsを返すルーティング
@@ -78,26 +96,50 @@ get '/questions/:user_id' do
     end
 end
 
+# TODO: 自分が質問したルーティングと全部の質問のルーティングを分ける
+
 #questionsを作るルーティング
 post '/questions/create/:user_id' do
-    img_url = ''
-    if params[:image]
-        img = params[:file]
-        tempfile = img[:tempfile]
-        upload = Cloudinary::Uploader.upload(tempfile.path)
-        img_url = upload['url']
+    if firebase_uid_to_uid(params[:user_id])
+        user_id = firebase_uid_to_uid(params[:user_id])
+        img_url = ''
+        if params[:image]
+            img = params[:file]
+            tempfile = img[:tempfile]
+            upload = Cloudinary::Uploader.upload(tempfile.path)
+            img_url = upload['url']
+        end
+        Question.create(
+            user_id: user_id,
+            comment: params[:comment],
+            title: params[:title],
+            image: img_url,
+            bestanswer_id: 0
+        )
+        status 200
+        json({ ok: true })
+    else
+        status 400
+        json({ ok: false })
     end
-    Question.create(
-        user_id: params[:user_id],
-        comment: params[:comment],
-        title: params[:title],
-        image: img_url,
-        bestanswer_id: 0
-    )
 end
 
-not_found do
-    status 404
+#usersを作るルーティング
+post '/user/create' do
+    user = User.find_by(firebase_uid: params[:firebase_uid])
+    if user != nil
+        user.update(
+            firebase_uid: params[:firebase_uid],
+            name: params[:name]
+        )
+    else
+        User.create(
+            firebase_uid: params[:firebase_uid],
+            name: params[:name]
+        )
+    end
+    status 200
+    json({ ok: true})
 end
 
 # テスト用
@@ -109,4 +151,14 @@ end
 post '/test' do
     status
     json({ ok: true, params: params })
+end
+
+# firebaseのUIDからuserIDを探す
+def firebase_uid_to_uid(firebase_uid)
+    user = User.find_by(firebase_uid: firebase_uid)
+    if user != nil
+        return user.id
+    else
+        return nil
+    end
 end
