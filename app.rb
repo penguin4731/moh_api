@@ -30,6 +30,7 @@ get '/tips/all' do
     if tips.empty?
         status 204
     else
+        tips = add_user_name(tips)
         tips.to_json
     end
 end
@@ -39,6 +40,7 @@ get '/tips/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
         tips = Tips.where(user_id: user_id)
+        tips = add_user_name(tips)
         tips.to_json
     else
         status 400
@@ -73,7 +75,7 @@ get '/tips/replies/:tips_id' do
     end
 end
 
-#repliesを作るルーティング
+#repliesを作るルーティング 削除予定
 post '/tips/reply/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
@@ -104,6 +106,7 @@ get '/questions/all' do
     if questions.empty?
         status 204
     else
+        questions = add_user_name(questions)
         questions.to_json
     end
 end
@@ -113,6 +116,7 @@ get '/questions/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
         questions = Question.where(user_id: user_id)
+        questions = add_user_name(questions)
         questions.to_json
     else
         status 400
@@ -180,6 +184,21 @@ def firebase_uid_to_uid(firebase_uid)
     user = User.find_by(firebase_uid: firebase_uid)
     if user != nil
         return user.id
+    else
+        return nil
+    end
+end
+
+# get user name
+def add_user_name(contents)
+    contents = contents.map { |doc| [doc.user_name = user_name(doc.user_id)]}
+    return contents
+end
+
+def user_name(id)
+    user = User.find(id)
+    if user != nil
+        return user.name
     else
         return nil
     end
