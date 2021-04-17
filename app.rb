@@ -52,6 +52,7 @@ end
 post '/tips/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
+        print(user_id, params[:comment], params[:title])
         Tip.create(
             user_id: user_id,
             comment: params[:comment],
@@ -191,7 +192,15 @@ end
 
 # get user name
 def add_user_name(contents)
-    contents = contents.map { |doc| [doc.user_name = user_name(doc.user_id)]}
+    contents.map{ |doc|
+        print(doc.class)
+        doc["user_name"] = user_name(doc.id)
+        print(doc.user_name)
+    }
+    # contents = contents.map { |doc|
+    #     print(doc.user_id)
+    #     # doc.user_name = user_name(doc.user_id)
+    # }
     return contents
 end
 
