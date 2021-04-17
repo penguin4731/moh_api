@@ -5,7 +5,7 @@ require 'open-uri'
 require "sinatra/json"
 require './models/models.rb'
 require 'sinatra/activerecord'
-require 'json'
+require "json"
 
 before do
     Dotenv.load
@@ -30,6 +30,7 @@ get '/tips/all' do
     if tips.empty?
         status 204
     else
+        tips = add_user_name(tips)
         tips.to_json
     end
 end
@@ -39,6 +40,7 @@ get '/tips/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
         tips = Tips.where(user_id: user_id)
+        tips = add_user_name(tips)
         tips.to_json
     else
         status 400
@@ -50,6 +52,7 @@ end
 post '/tips/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
+        print(user_id, params[:comment], params[:title])
         Tip.create(
             user_id: user_id,
             comment: params[:comment],
@@ -93,6 +96,7 @@ get '/questions/all' do
     if questions.empty?
         status 204
     else
+        questions = add_user_name(questions)
         questions.to_json
     end
 end
@@ -102,6 +106,7 @@ get '/questions/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
         questions = Question.where(user_id: user_id)
+        questions = add_user_name(questions)
         questions.to_json
     else
         status 400
@@ -165,7 +170,7 @@ post '/user/create' do
         )
     end
     status 200
-    json({ ok: true})
+    json({ ok: true })
 end
 
 # テスト用
@@ -184,6 +189,27 @@ def firebase_uid_to_uid(firebase_uid)
     user = User.find_by(firebase_uid: firebase_uid)
     if user != nil
         return user.id
+    else
+        return nil
+    end
+end
+
+# get user name
+def add_user_name(contents)
+    json_f = contents.to_json
+    hash_f = JSON.parse json_f
+    content_f = []
+    for doc in hash_f do
+        doc["user_name"] = user_name(doc['user_id'])
+        content_f.append(doc)
+    end
+    return content_f
+end
+
+def user_name(id)
+    user = User.find(id)
+    if user != nil
+        return user.name
     else
         return nil
     end
