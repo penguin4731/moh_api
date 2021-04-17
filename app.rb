@@ -73,3 +73,31 @@ post '/tips/reply/create/:user_id' do
         image: img_url
     )
 end
+
+#questionsを返すルーティング
+get '/questions/:user_id' do
+    questions = Question.all
+    if questions.empty?
+        status 404
+    else
+        questions.to_json
+    end
+end
+
+#questionsを作るルーティング
+post '/questions/create/:user_id' do
+    img_url = ''
+    if params[:image]
+        img = params[:file]
+        tempfile = img[:tempfile]
+        upload = Cloudinary::Uploader.upload(tempfile.path)
+        img_url = upload['url']
+    end
+    Question.create(
+        user_id: params[:user_id],
+        refer_id: params[:refer_id],
+        comment: params[:comment],
+        image: img_url,
+        bestanswer_id: 0
+    )
+end
