@@ -36,3 +36,10 @@ end
 class Answer < ActiveRecord::Base
     belongs_to :question
 end
+
+class User < ActiveRecord::Base
+    has_many :tips
+    has_many :tips_replies
+    has_many :questions
+    has_many :answers
+end
