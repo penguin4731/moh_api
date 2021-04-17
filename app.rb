@@ -66,6 +66,25 @@ post '/tips/create/:user_id' do
     end
 end
 
+#likesを作る
+post '/tips/like/:user_id' do
+    if firebase_uid_to_uid(params[:user_id])
+        user_id = firebase_uid_to_uid(params[:user_id])
+        Like.create(
+            user_id: user_id,
+            tips_id: params[:tips_id],
+            good: true
+        )
+        status 200
+        json({ ok: true })
+    else
+        status 400
+        json({ ok: false })
+    end
+end
+
+
+
 #tips_repliesを返すルーティング 削除予定
 get '/tips/replies/:tips_id' do
     replies = Tip_reply.find_by(tip_id: params[:tips_id])
