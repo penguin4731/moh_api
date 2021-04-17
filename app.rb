@@ -36,6 +36,7 @@ post '/create/refers/:id' do
         post_id: params[:id],
         category_id: Category.find_by(name: params[:name]).id
     )
+    json({ ok: true })
 end
 
 #全てのtipsを返すルーティング
