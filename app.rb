@@ -88,6 +88,7 @@ post '/questions/create/:user_id' do
     Question.create(
         user_id: params[:user_id],
         comment: params[:comment],
+        title: params[:title],
         image: img_url,
         bestanswer_id: 0
     )
