@@ -112,9 +112,11 @@ end
 get '/questions/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
-        
+        questions = Question.where(user_id: user_id)
+        questions.to_json
     else
-
+        status 400
+        json({ ok: false })
     end
 end
 
