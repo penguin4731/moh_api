@@ -172,6 +172,7 @@ post '/questions/answer/create/:user_id' do
             upload = Cloudinary::Uploader.upload(tempfile.path)
             img_url = upload['url']
         end
+        category_check(params[:question_id], params[:categories])
         Answer.create(
             user_id: user_id,
             comment: params[:comment],
@@ -261,12 +262,4 @@ def category_check(question_id, categories)
             category_id: data.id
         )
     end
-end
-
-get '/' do
-    category_check(1, ["iPhone", "Android"])
-    for doc in Category.all do
-        puts doc.name
-    end
-    return json({ ok: true })
 end
