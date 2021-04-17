@@ -5,7 +5,7 @@ require 'open-uri'
 require "sinatra/json"
 require './models/models.rb'
 require 'sinatra/activerecord'
-require 'json'
+require "json"
 
 before do
     Dotenv.load
@@ -66,35 +66,24 @@ post '/tips/create/:user_id' do
     end
 end
 
-#tips_repliesを返すルーティング 削除予定
-get '/tips/replies/:tips_id' do
-    replies = Tip_reply.find_by(tip_id: params[:tips_id])
-    if replies.empty?
-        status 204
-    else
-        replies.to_json
-    end
-end
-
-#repliesを作るルーティング 削除予定
-post '/tips/reply/create/:user_id' do
+#likesを作る
+post '/tips/like/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
-        img_url = ''
-        if params[:image]
-            img = params[:file]
-            tempfile = img[:tempfile]
-            upload = Cloudinary::Uploader.upload(tempfile.path)
-            img_url = upload['url']
+        like = Like.find_by(id: params[:id])
+        if like.nil?
+            Like.create(
+                user_id: user_id,
+                tips_id: params[:tips_id],
+                good: true
+            )
+            status 200
+            json({ ok: true })
+        else
+            like.update(
+                good: !good
+            )
         end
-        Tip_reply.create(
-            user_id: user_id,
-            tip_id: params[:tip_id],
-            comment: params[:comment],
-            image: img_url
-        )
-        status 200
-        json({ ok: true })
     else
         status 400
         json({ ok: false })
@@ -151,6 +140,21 @@ post '/questions/create/:user_id' do
     end
 end
 
+#referテーブルを作成するルーティング
+post '/questions/create/refers/:id' do
+    category = Category.find_by(name: params[:name])
+    if category.nil?
+        Category.create(
+            name: params[:name]
+        )
+    end
+    Refer.create(
+        post_id: params[:id],
+        category_id: Category.find_by(name: params[:name]).id
+    )
+    json({ ok: true })
+end
+
 #usersを作るルーティング
 post '/user/create' do
     user = User.find_by(firebase_uid: params[:firebase_uid])
@@ -166,7 +170,7 @@ post '/user/create' do
         )
     end
     status 200
-    json({ ok: true})
+    json({ ok: true })
 end
 
 # テスト用
@@ -192,16 +196,14 @@ end
 
 # get user name
 def add_user_name(contents)
-    contents.map{ |doc|
-        print(doc.class)
-        doc["user_name"] = user_name(doc.id)
-        print(doc.user_name)
-    }
-    # contents = contents.map { |doc|
-    #     print(doc.user_id)
-    #     # doc.user_name = user_name(doc.user_id)
-    # }
-    return contents
+    json_f = contents.to_json
+    hash_f = JSON.parse json_f
+    content_f = []
+    for doc in hash_f do
+        doc["user_name"] = user_name(doc['user_id'])
+        content_f.append(doc)
+    end
+    return content_f
 end
 
 def user_name(id)

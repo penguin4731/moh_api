@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_17_022243) do
+ActiveRecord::Schema.define(version: 2021_04_17_133227) do
 
   create_table "answers", force: :cascade do |t|
     t.integer "user_id"
@@ -23,6 +23,12 @@ ActiveRecord::Schema.define(version: 2021_04_17_022243) do
     t.string "name"
   end
 
+  create_table "likes", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "tips_id"
+    t.boolean "good"
+  end
+
   create_table "questions", force: :cascade do |t|
     t.integer "user_id"
     t.text "comment"
@@ -32,7 +38,6 @@ ActiveRecord::Schema.define(version: 2021_04_17_022243) do
   end
 
   create_table "refers", force: :cascade do |t|
-    t.boolean "type"
     t.integer "category_id"
     t.integer "post_id"
   end
@@ -41,13 +46,6 @@ ActiveRecord::Schema.define(version: 2021_04_17_022243) do
     t.integer "user_id"
     t.text "comment"
     t.string "title"
-  end
-
-  create_table "tips_replies", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "tip_id"
-    t.text "comment"
-    t.string "image"
   end
 
   create_table "users", force: :cascade do |t|
