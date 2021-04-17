@@ -97,6 +97,7 @@ get '/questions/all' do
         status 204
     else
         questions = add_user_name(questions)
+        questions = add_category(questions)
         questions.to_json
     end
 end
@@ -125,6 +126,7 @@ post '/questions/create/:user_id' do
             upload = Cloudinary::Uploader.upload(tempfile.path)
             img_url = upload['url']
         end
+        category_check(params[:question_id], params[:categories])
         Question.create(
             user_id: user_id,
             comment: params[:comment],
@@ -158,7 +160,6 @@ post '/questions/answer/create/:user_id' do
             upload = Cloudinary::Uploader.upload(tempfile.path)
             img_url = upload['url']
         end
-        category_check(params[:question_id], params[:categories])
         Answer.create(
             user_id: user_id,
             comment: params[:comment],
@@ -233,8 +234,12 @@ def user_name(id)
     end
 end
 
-# カテゴリーの処理
-def category_check(question_id, categories)
+# カテゴリーを登録
+def category_check(question_id, categories_input)
+    if categories_input == nil
+        return
+    end
+    categories = categories_input.split(",")
     for category in categories do
         check_data = Category.find_by(name: category)
         if check_data == nil
@@ -247,5 +252,37 @@ def category_check(question_id, categories)
             post_id: question_id,
             category_id: data.id
         )
+    end
+end
+
+# カテゴリーを出力
+def add_category(contents)
+    json_f = contents.to_json
+    hash_f = JSON.parse json_f
+    content_f = []
+    for doc in hash_f do
+        doc["category"] = category_name(doc['question_id'])
+        content_f.append(doc)
+    end
+    return content_f
+end
+
+def category_name(question_id)
+    categories_d = Refer.where(post_id: question_id)
+    category_output = ""
+    if categories_d != nil
+        for category in categories_d do
+            category_output = category_output + ',' + search_category_name(category.category_id)
+        end
+    end
+    return category_output
+end
+
+def search_category_name(id)
+    category = Category.find(id)
+    if category != nil
+        return category.name
+    else
+        return nil
     end
 end
