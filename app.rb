@@ -99,3 +99,14 @@ end
 not_found do
     status 404
 end
+
+# テスト用
+get '/test/:content' do
+    status 200
+    json({ ok: true, content: params[:content] })
+end
+
+post '/test' do
+    status
+    json({ ok: true, params: params })
+end
