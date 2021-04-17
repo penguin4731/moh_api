@@ -90,42 +90,6 @@ post '/tips/like/:user_id' do
     end
 end
 
-
-#tips_repliesを返すルーティング 削除予定
-get '/tips/replies/:tips_id' do
-    replies = Tip_reply.find_by(tip_id: params[:tips_id])
-    if replies.empty?
-        status 204
-    else
-        replies.to_json
-    end
-end
-
-#repliesを作るルーティング
-post '/tips/reply/create/:user_id' do
-    if firebase_uid_to_uid(params[:user_id])
-        user_id = firebase_uid_to_uid(params[:user_id])
-        img_url = ''
-        if params[:image]
-            img = params[:file]
-            tempfile = img[:tempfile]
-            upload = Cloudinary::Uploader.upload(tempfile.path)
-            img_url = upload['url']
-        end
-        Tip_reply.create(
-            user_id: user_id,
-            tip_id: params[:tip_id],
-            comment: params[:comment],
-            image: img_url
-        )
-        status 200
-        json({ ok: true })
-    else
-        status 400
-        json({ ok: false })
-    end
-end
-
 #questionsを返すルーティング
 get '/questions/:user_id' do
     questions = Question.all
