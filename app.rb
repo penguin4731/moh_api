@@ -32,17 +32,10 @@ end
 
 #tipsを作るルーティング
 post '/tips/create/:user_id' do
-    img_url = ''
-    if params[:image]
-        img = params[:file]
-        tempfile = img[:tempfile]
-        upload = Cloudinary::Uploader.upload(tempfile.path)
-        img_url = upload['url']
-    end
     Tip.create(
         user_id: params[:user_id],
         comment: params[:comment],
-        image: img_url
+        title: params[:title]
     )
 end
 
@@ -95,6 +88,7 @@ post '/questions/create/:user_id' do
     Question.create(
         user_id: params[:user_id],
         comment: params[:comment],
+        title: params[:title],
         image: img_url,
         bestanswer_id: 0
     )
