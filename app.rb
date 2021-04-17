@@ -20,6 +20,11 @@ error do
     status 500
 end
 
+post '/' do
+    status 200
+    json({ ok: true, status: 'home' })
+end
+
 #全てのtipsを返すルーティング
 get '/tips/all' do
     tips = Tip.all
