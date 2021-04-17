@@ -41,7 +41,7 @@ post '/tips/create/:user_id' do
     end
     Tip.create(
         user_id: params[:user_id],
-        category_id: params[:category_id],
+        refer_id: params[:category_id],
         comment: params[:comment],
         image: img_url
     )
