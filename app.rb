@@ -32,13 +32,6 @@ end
 
 #tipsを作るルーティング
 post '/tips/create/:user_id' do
-    img_url = ''
-    if params[:image]
-        img = params[:file]
-        tempfile = img[:tempfile]
-        upload = Cloudinary::Uploader.upload(tempfile.path)
-        img_url = upload['url']
-    end
     Tip.create(
         user_id: params[:user_id],
         comment: params[:comment],
