@@ -26,17 +26,16 @@ end
 
 #referテーブルを作成するルーティング
 post '/create/refers/:id' do
-    if firebase_uid_to_uid(params[:id])
-        Refer.create(
-            category_id: params[:category_id],
-            post_id: params[:id]
+    category = Category.find_by(name: params[:name])
+    if category.nil?
+        Category.create(
+            name: params[:name]
         )
-        status 200
-        json({ ok: true })
-    else
-        status 400
-        json({ ok: false })
     end
+    Refer.create(
+        post_id: params[:id],
+        category_id: Category.find_by(name: params[:name]).id
+    )
 end
 
 #全てのtipsを返すルーティング
