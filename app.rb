@@ -155,7 +155,7 @@ post '/questions/create/refers/:id' do
     json({ ok: true })
 end
 
-get '/answer/:question_id' do
+get '/questions/answer/:question_id' do
     answers = Answer.find_by(question_id: params[:question_id])
     answers.to_json
 end
