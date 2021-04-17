@@ -16,7 +16,8 @@ before do
     end
 end
 
-get '/' do
+error do
+    status 500
 end
 
 #全てのtipsを表示させるルーティング
@@ -27,9 +28,6 @@ get '/tips/all' do
     else
         tips.to_json
     end
-end
-error do
-    status 500
 end
 
 #tipsを作るルーティング
