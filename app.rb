@@ -16,6 +16,10 @@ before do
     end
 end
 
+not_found do
+    status 404
+end
+
 error do
     status 500
 end
@@ -100,8 +104,22 @@ post '/questions/create/:user_id' do
     json({ ok: true, status: 'success' })
 end
 
-not_found do
-    status 404
+#usersを作るルーティング
+post '/user/create' do
+    user = User.find_by(firebase_uid: params[:firebase_uid])
+    if user != nil
+        user.update(
+            firebase_uid: params[:firebase_uid],
+            name: params[:name]
+        )
+    else
+        User.create(
+            firebase_uid: params[:firebase_uid],
+            name: params[:name]
+        )
+    end
+    status 200
+    json({ ok: true, status: 'success' })
 end
 
 # テスト用
@@ -113,4 +131,14 @@ end
 post '/test' do
     status
     json({ ok: true, params: params })
+end
+
+# firebaseのUIDからuserIDを探す
+def firebase_uid_to_uid(firebase_uid)
+    user = User.find_by(firebase_uid: firebase_uid)
+    if user != nil
+        return user.id
+    else
+        return nil
+    end
 end
