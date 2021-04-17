@@ -66,6 +66,8 @@ post '/tips/reply/create/:user_id' do
         comment: params[:comment],
         image: img_url
     )
+    status 200
+    json({ ok: true, status: 'success' })
 end
 
 #questionsを返すルーティング
@@ -94,6 +96,8 @@ post '/questions/create/:user_id' do
         image: img_url,
         bestanswer_id: 0
     )
+    status 200
+    json({ ok: true, status: 'success' })
 end
 
 not_found do
