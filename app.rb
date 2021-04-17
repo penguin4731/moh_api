@@ -22,7 +22,14 @@ end
 #全てのtipsを表示させるルーティング
 get '/tips/all' do
     tips = Tip.all
-    tips.to_json
+    if tips.empty?
+        status 404
+    else
+        tips.to_json
+    end
+end
+error do
+    status 500
 end
 
 #tipsを作るルーティング
