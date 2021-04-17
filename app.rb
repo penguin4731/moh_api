@@ -155,6 +155,37 @@ post '/questions/create/refers/:id' do
     json({ ok: true })
 end
 
+get '/questions/answer/:question_id' do
+    answers = Answer.find_by(question_id: params[:question_id])
+    answers.to_json
+end
+
+
+#answerを作るルーティング
+post '/questions/answer/create/:user_id' do
+    if firebase_uid_to_uid(params[:user_id])
+        user_id = firebase_uid_to_uid(params[:user_id])
+        img_url = ''
+        if params[:image]
+            img = params[:file]
+            tempfile = img[:tempfile]
+            upload = Cloudinary::Uploader.upload(tempfile.path)
+            img_url = upload['url']
+        end
+        Answer.create(
+            user_id: user_id,
+            comment: params[:comment],
+            question_id: params[:question_id],
+            image: img_url
+        )
+        status 200
+        json({ ok: true })
+    else
+        status 400
+        json({ ok: false })
+    end
+end
+
 #usersを作るルーティング
 post '/user/create' do
     user = User.find_by(firebase_uid: params[:firebase_uid])
