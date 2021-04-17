@@ -5,7 +5,7 @@ require 'open-uri'
 require "sinatra/json"
 require './models/models.rb'
 require 'sinatra/activerecord'
-require 'json'
+require "json"
 
 before do
     Dotenv.load
@@ -166,7 +166,7 @@ post '/user/create' do
         )
     end
     status 200
-    json({ ok: true})
+    json({ ok: true })
 end
 
 # テスト用
@@ -192,16 +192,14 @@ end
 
 # get user name
 def add_user_name(contents)
-    contents.map{ |doc|
-        print(doc.class)
-        doc["user_name"] = user_name(doc.id)
-        print(doc.user_name)
-    }
-    # contents = contents.map { |doc|
-    #     print(doc.user_id)
-    #     # doc.user_name = user_name(doc.user_id)
-    # }
-    return contents
+    json_f = contents.to_json
+    hash_f = JSON.parse json_f
+    content_f = []
+    for doc in hash_f do
+        doc["user_name"] = user_name(doc['user_id'])
+        content_f.append(doc)
+    end
+    return content_f
 end
 
 def user_name(id)
