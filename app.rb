@@ -70,19 +70,25 @@ end
 post '/tips/like/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
-        Like.create(
-            user_id: user_id,
-            tips_id: params[:tips_id],
-            good: true
-        )
-        status 200
-        json({ ok: true })
+        like = Like.find_by(id: params[:id])
+        if like.nil?
+            Like.create(
+                user_id: user_id,
+                tips_id: params[:tips_id],
+                good: true
+            )
+            status 200
+            json({ ok: true })
+        else
+            like.update(
+                good: !good
+            )
+        end
     else
         status 400
         json({ ok: false })
     end
 end
-
 
 
 #tips_repliesを返すルーティング 削除予定
