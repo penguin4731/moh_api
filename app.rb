@@ -34,6 +34,18 @@ get '/tips/all' do
     end
 end
 
+# 自分が投稿したTipsを返すルーティング
+get '/tips/:user_id' do
+    if firebase_uid_to_uid(params[:user_id])
+        user_id = firebase_uid_to_uid(params[:user_id])
+        tips = Tips.where(user_id: user_id)
+        tips.to_json
+    else
+        status 400
+        json({ ok: false })
+    end
+end
+
 #tipsを作るルーティング
 post '/tips/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
