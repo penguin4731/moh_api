@@ -98,8 +98,8 @@ post '/tips/reply/create/:user_id' do
     end
 end
 
-#questionsを返すルーティング
-get '/questions/:user_id' do
+#questionsを全て返す
+get '/questions/all' do
     questions = Question.all
     if questions.empty?
         status 204
@@ -108,7 +108,17 @@ get '/questions/:user_id' do
     end
 end
 
-# TODO: 自分が質問したルーティングと全部の質問のルーティングを分ける
+# 自分が質問したquestionsを全て返す
+get '/questions/:user_id' do
+    if firebase_uid_to_uid(params[:user_id])
+        user_id = firebase_uid_to_uid(params[:user_id])
+        questions = Question.where(user_id: user_id)
+        questions.to_json
+    else
+        status 400
+        json({ ok: false })
+    end
+end
 
 #questionsを作るルーティング
 post '/questions/create/:user_id' do
