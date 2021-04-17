@@ -50,4 +50,9 @@ ActiveRecord::Schema.define(version: 2021_04_17_022243) do
     t.string "image"
   end
 
+  create_table "users", force: :cascade do |t|
+    t.string "firebase_uid"
+    t.string "name"
+  end
+
 end
