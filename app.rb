@@ -41,7 +41,6 @@ post '/tips/create/:user_id' do
     end
     Tip.create(
         user_id: params[:user_id],
-        refer_id: params[:category_id],
         comment: params[:comment],
         image: img_url
     )
@@ -95,7 +94,6 @@ post '/questions/create/:user_id' do
     end
     Question.create(
         user_id: params[:user_id],
-        refer_id: params[:refer_id],
         comment: params[:comment],
         image: img_url,
         bestanswer_id: 0
