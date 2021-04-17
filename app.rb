@@ -155,14 +155,14 @@ post '/questions/create/refers/:id' do
     json({ ok: true })
 end
 
-get '/answer/:id' do
-    answers = Answer.find_by(question_id: params[:id])
+get '/answer/:question_id' do
+    answers = Answer.find_by(question_id: params[:question_id])
     answers.to_json
 end
 
 
 #answerを作るルーティング
-post '/answer/create/:user_id' do
+post '/questions/answer/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
         img_url = ''
