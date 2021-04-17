@@ -23,14 +23,13 @@ end
 get '/tips/all' do
     tips = Tip.all
     if tips.empty?
-        "status:404"
+        status 404
     else
-        "status:200"
         tips.to_json
     end
 end
 error do
-    "status:500"
+    status 500
 end
 
 #tipsを作るルーティング
