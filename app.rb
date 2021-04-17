@@ -214,3 +214,28 @@ def user_name(id)
         return nil
     end
 end
+
+# カテゴリーの処理
+def category_check(question_id, categories)
+    for category in categories do
+        check_data = Category.find_by(name: category)
+        if check_data == nil
+            Category.create(
+                name: category
+            )
+        end
+        data = Category.find_by(name: category)
+        Refer.create(
+            post_id: question_id,
+            category_id: data.id
+        )
+    end
+end
+
+get '/' do
+    category_check(1, ["iPhone", "Android"])
+    for doc in Category.all do
+        puts doc.name
+    end
+    return json({ ok: true })
+end
