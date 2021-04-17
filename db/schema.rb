@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_17_021731) do
+ActiveRecord::Schema.define(version: 2021_04_17_022243) do
 
   create_table "answers", force: :cascade do |t|
     t.integer "user_id"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 2021_04_17_021731) do
     t.text "comment"
     t.string "image"
     t.integer "bestanswer_id"
+    t.string "title"
   end
 
   create_table "refers", force: :cascade do |t|
