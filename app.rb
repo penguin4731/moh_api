@@ -20,6 +20,11 @@ error do
     status 500
 end
 
+#referテーブルを作成するルーティング
+post '/create/refers/:id' do
+
+end
+
 #全てのtipsを返すルーティング
 get '/tips/all' do
     tips = Tip.all
