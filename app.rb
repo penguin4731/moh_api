@@ -18,9 +18,10 @@ end
 
 get '/' do
 end
+
 #全てのtipsを表示させるルーティング
 get '/tips/all' do
-    
+    tips = Tip.all
     tips.to_json
 end
 
