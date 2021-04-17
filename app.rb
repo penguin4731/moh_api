@@ -16,10 +16,11 @@ before do
     end
 end
 
-get '/' do
+error do
+    status 500
 end
 
-#全てのtipsを表示させるルーティング
+#全てのtipsを返すルーティング
 get '/tips/all' do
     tips = Tip.all
     if tips.empty?
@@ -27,9 +28,6 @@ get '/tips/all' do
     else
         tips.to_json
     end
-end
-error do
-    status 500
 end
 
 #tipsを作るルーティング
@@ -44,6 +42,33 @@ post '/tips/create/:user_id' do
     Tip.create(
         user_id: params[:user_id],
         category_id: params[:category_id],
+        comment: params[:comment],
+        image: img_url
+    )
+end
+
+#tips_repliesを返すルーティング
+get '/tips/replies/:tips_id' do
+    replies = Tip_reply.find_by(tip_id: params[:tips_id])
+    if replies.empty?
+        status 404
+    else
+        replies.to_json
+    end
+end
+
+#repliesを作るルーティング
+post '/tips/reply/create/:user_id' do
+    img_url = ''
+    if params[:image]
+        img = params[:file]
+        tempfile = img[:tempfile]
+        upload = Cloudinary::Uploader.upload(tempfile.path)
+        img_url = upload['url']
+    end
+    Tip_reply.create(
+        user_id: params[:user_id],
+        tip_id: params[:tip_id],
         comment: params[:comment],
         image: img_url
     )
