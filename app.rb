@@ -120,8 +120,8 @@ get '/tips/like/count/:tips_id' do
         status 200
         json({ like_count: like.length })
     else
-        status 400
-        json({ ok: false, status: 400 })
+        status 204
+        json({ like_count: 0 })
     end
 end
 
