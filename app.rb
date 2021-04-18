@@ -76,26 +76,52 @@ post '/tips/create/:user_id' do
 end
 
 #likesを作る
-post '/tips/like/:user_id' do
-    if firebase_uid_to_uid(params[:user_id])
-        user_id = firebase_uid_to_uid(params[:user_id])
-        like = Like.find_by(id: params[:id])
-        if like.nil?
-            Like.create(
+post '/tips/like/create/:user_id' do
+    if user_id = firebase_uid_to_uid(params[:user_id])
+        if like = Favorite.find_by(tips_id: params[:tips_id])
+            like.update(
+                good: !like.good
+            )
+        else
+            Favorite.create(
                 user_id: user_id,
                 tips_id: params[:tips_id],
                 good: true
             )
+        end
+        status 200
+        json({ ok: true })
+    else
+        status 400
+        json({ ok: false })
+    end
+end
+
+# いいね押したか押してないか
+get '/tips/like/check/:tips_id/:user_id' do
+    if user_id = firebase_uid_to_uid(params[:user_id])
+        if like = Favorite.where(tips_id: params[:tips_id].to_i).where(user_id: user_id)
+            print(like.to_json,"\n")
             status 200
-            json({ ok: true })
+            json({ like: like[0].good })
         else
-            like.update(
-                good: !good
-            )
+            status 200
+            json({ like: false })
         end
     else
         status 400
         json({ ok: false })
+    end
+end
+
+# いいねの数
+get '/tips/like/count/:tips_id' do
+    if like = Favorite.where(tips_id: params[:tips_id].to_i).where(good: true)
+        status 200
+        json({ like_count: like.length })
+    else
+        status 400
+        json({ ok: false, status: 400 })
     end
 end
 

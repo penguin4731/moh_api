@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 2021_04_18_020102) do
     t.string "name"
   end
 
-  create_table "likes", force: :cascade do |t|
+  create_table "favorites", force: :cascade do |t|
     t.integer "user_id"
     t.integer "tips_id"
     t.boolean "good"
