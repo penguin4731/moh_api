@@ -57,7 +57,7 @@ get '/tips/:user_id' do
 end
 
 #カテゴリーでTipsを絞って返すルーティング
-get '/tips/:category_id' do
+get '/tips/category/:category_id' do
     tips = Category.find_by(id: params[:category_id]).tips
     if tips.empty?
         status 204
@@ -139,7 +139,7 @@ get '/questions/:user_id' do
 end
 
 #カテゴリーでQuestionsを絞って返すルーティング
-get '/questions/:category_id' do
+get '/questions/category/:category_id' do
     questions = Category.find_by(id: params[:category_id]).questions
     if questions.empty?
         status 204
