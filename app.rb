@@ -273,6 +273,15 @@ end
 # Category
 # ----------------
 
+#カテゴリー一覧を返す
+get '/category/all' do
+    categories = Category.all
+    if categories.empty?
+        status 204
+    else
+        categories.to_json
+    end
+end
 # カテゴリーを登録
 def write_category(question_id, contents, type)
     if contents == nil
