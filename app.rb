@@ -58,7 +58,7 @@ end
 
 #カテゴリーでTipsを絞って返すルーティング
 get '/tips/category/:category_id' do
-    tips = Category.find_by(id: params[:category_id]).tips
+    tips = Tips.find(Refer.find_by(category_id: params[:category_id], c_type: "t").post_id)
     if tips.empty?
         status 204
     else
@@ -140,7 +140,7 @@ end
 
 #カテゴリーでQuestionsを絞って返すルーティング
 get '/questions/category/:category_id' do
-    questions = Category.find_by(id: params[:category_id]).questions 
+    questions = Question.find(Refer.find_by(category_id: params[:category_id], c_type: "q").post_id)
     if questions.empty?
         status 204
     else
