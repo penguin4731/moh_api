@@ -107,7 +107,7 @@ get '/questions/all' do
         status 204
     else
         questions = add_user_name(questions)
-        questions = add_category(questions)
+        questions = add_category(questions, "q")
         questions.to_json
     end
 end
@@ -117,7 +117,7 @@ get '/questions/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
         questions = Question.where(user_id: user_id)
-        questions = add_user_name(questions)
+        questions = add_user_name(questions, "q")
         questions.to_json
     else
         status 400
@@ -136,14 +136,14 @@ post '/questions/create/:user_id' do
             upload = Cloudinary::Uploader.upload(tempfile.path)
             img_url = upload['url']
         end
-        write_category(params[:question_id], params[:categories])
-        Question.create(
+        created = Question.create(
             user_id: user_id,
             comment: params[:comment],
             title: params[:title],
             image: img_url,
             bestanswer_id: 0
         )
+        write_category(created.id, params[:categories], "q")
         status 200
         json({ ok: true })
     else
@@ -271,7 +271,7 @@ end
 # ----------------
 
 # カテゴリーを登録
-def write_category(question_id, contents)
+def write_category(question_id, contents, type)
     if contents == nil
         return
     end
@@ -284,25 +284,25 @@ def write_category(question_id, contents)
         Refer.create(
             category_id: check_content.id,
             post_id: question_id.to_i,
-            type: params[:type]
+            c_type: "q"
         )
     end
 end
 
 # カテゴリーを出力
-def add_category(contents)
+def add_category(contents, type)
     json_format = contents.to_json
     hash_format = JSON.parse json_format
     content_f = []
     for doc in hash_format do
-        doc["category"] = create_category_list(doc["question_id"])
+        doc["category"] = create_category_list(doc["id"], type)
         content_f.append(doc)
     end
     return content_f
 end
 
-def create_category_list(question_id)
-    categories_d = Refer.where(post_id: question_id.to_i)
+def create_category_list(post_id, type)
+    categories_d = Refer.where(post_id: post_id.to_i).where(c_type: type)
     category_output = ""
     if categories_d == nil
         return
@@ -312,7 +312,7 @@ def create_category_list(question_id)
             category_output = category_output + ',' + search_category_name(category.category_id)
         end
     end
-    return category_output.slice!(1,1000000000000000)
+    return category_output.slice!(1,1000000000000000000)
 end
 
 def search_category_name(id)
