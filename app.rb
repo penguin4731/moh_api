@@ -140,6 +140,7 @@ post '/questions/create/:user_id' do
     end
 end
 
+
 #referテーブルを作成するルーティング
 post '/questions/create/refers/:id' do
     category = Category.find_by(name: params[:name])
@@ -186,6 +187,15 @@ post '/questions/answer/create/:user_id' do
     end
 end
 
+#ベストアンサーを作るルーティング
+post '/questions/bestanswer/create/:question_id' do
+    question = Question.find_by(id: params[:question_id])
+    question.update(
+        bestanswer_id: params[:answer_id]
+    )
+    status 200
+    json({ ok: true })
+end
 #usersを作るルーティング
 post '/user/create' do
     user = User.find_by(firebase_uid: params[:firebase_uid])
