@@ -275,30 +275,16 @@ def write_category(question_id, contents)
     if contents == nil
         return
     end
-    print(question_id.to_s, contents.to_json)
-end
-
-
-def category_check(question_id, categories_input)
-    if categories_input == nil
-        return
-    end
-    categories = categories_input.split(",")
-    for category in categories do
-        check_data = Category.find_by(name: category)
-        if check_data == nil
-            # Category.create(
-            #     name: category
-            # )
+    content_format = contents.split(",")
+    for content in content_format do
+        check_content = Category.find_by(name: content)
+        if check_content == nil
+            check_content = Category.create(name: content)
         end
-        # @category = Category.find_by(name: category)
-        # @category.refers.create(post_id: question_id)
-
-        # added_category = Category.find_by(name: category)
-        # refers = added_category.refers.create(
-        #     post_id: question_id,
-        #     category_id: added_category.id
-        # )
+        Refer.create(
+            category_id: check_content.id,
+            post_id: question_id.to_i
+        )
     end
 end
 
@@ -323,7 +309,7 @@ def create_category_list(question_id)
     for category in categories_d do
         category_output = category_output + ',' + search_category_name(category.category_id)
     end
-    return category_output
+    return category_output.slice!(1,1000000000000000)
 end
 
 def search_category_name(id)
