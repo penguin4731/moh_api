@@ -18,10 +18,12 @@ end
 
 not_found do
     status 404
+    json({ ok:false })
 end
 
 error do
     status 500
+    json({ ok:false })
 end
 
 #全てのtipsを返すルーティング
@@ -196,6 +198,7 @@ post '/questions/bestanswer/create/:question_id' do
     status 200
     json({ ok: true })
 end
+
 #usersを作るルーティング
 post '/user/create' do
     user = User.find_by(firebase_uid: params[:firebase_uid])
