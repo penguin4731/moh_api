@@ -107,6 +107,7 @@ get '/questions/all' do
         status 204
     else
         questions = add_user_name(questions)
+        questions = add_category(questions)
         questions.to_json
     end
 end
@@ -135,6 +136,7 @@ post '/questions/create/:user_id' do
             upload = Cloudinary::Uploader.upload(tempfile.path)
             img_url = upload['url']
         end
+        write_category(params[:question_id], params[:categories])
         Question.create(
             user_id: user_id,
             comment: params[:comment],
@@ -150,22 +152,7 @@ post '/questions/create/:user_id' do
     end
 end
 
-
-#referテーブルを作成するルーティング
-post '/questions/create/refers/:id' do
-    category = Category.find_by(name: params[:name])
-    if category.nil?
-        Category.create(
-            name: params[:name]
-        )
-    end
-    Refer.create(
-        post_id: params[:id],
-        category_id: Category.find_by(name: params[:name]).id
-    )
-    json({ ok: true })
-end
-
+#answerテーブルを作成するルーティング
 get '/questions/answer/:question_id' do
     answers = Answer.find_by(question_id: params[:question_id])
     answers.to_json
@@ -282,3 +269,68 @@ end
 # ----------------
 # Category
 # ----------------
+
+# カテゴリーを登録
+def write_category(question_id, contents)
+    if contents == nil
+        return
+    end
+    print(question_id.to_s, contents.to_json)
+end
+
+
+def category_check(question_id, categories_input)
+    if categories_input == nil
+        return
+    end
+    categories = categories_input.split(",")
+    for category in categories do
+        check_data = Category.find_by(name: category)
+        if check_data == nil
+            # Category.create(
+            #     name: category
+            # )
+        end
+        # @category = Category.find_by(name: category)
+        # @category.refers.create(post_id: question_id)
+
+        # added_category = Category.find_by(name: category)
+        # refers = added_category.refers.create(
+        #     post_id: question_id,
+        #     category_id: added_category.id
+        # )
+    end
+end
+
+# カテゴリーを出力
+def add_category(contents)
+    json_format = contents.to_json
+    hash_format = JSON.parse json_format
+    content_f = []
+    for doc in hash_format do
+        doc["category"] = create_category_list(doc["question_id"])
+        content_f.append(doc)
+    end
+    return content_f
+end
+
+def create_category_list(question_id)
+    categories_d = Refer.where(post_id: question_id.to_i)
+    category_output = ""
+    if categories_d == nil
+        return
+    end
+    for category in categories_d do
+        category_output = category_output + ',' + search_category_name(category.category_id)
+    end
+    return category_output
+end
+
+def search_category_name(id)
+    category = Category.find(id)
+    if category != nil
+        return category.name
+    else
+        return nil
+    end
+end
