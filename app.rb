@@ -66,7 +66,7 @@ post '/tips/create/:user_id' do
             comment: params[:comment],
             title: params[:title]
         )
-        write_category(created.id, params[:categories], "q")
+        write_category(created.id, params[:categories], "t")
         status 200
         json({ ok: true })
     else
@@ -287,7 +287,7 @@ def write_category(question_id, contents, type)
         Refer.create(
             category_id: check_content.id,
             post_id: question_id.to_i,
-            c_type: "q"
+            c_type: type
         )
     end
 end
