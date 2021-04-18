@@ -1,4 +1,4 @@
-if Category.number == 0
+if Category.count == 0
     Category.create(
         [
             {

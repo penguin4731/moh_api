@@ -56,6 +56,17 @@ get '/tips/:user_id' do
     end
 end
 
+#カテゴリーでTipsを絞って返すルーティング
+get '/tips/category/:category_id' do
+    tips = Tip.find(Refer.find_by(category_id: params[:category_id], c_type: "t").post_id)
+    if tips.empty?
+        status 204
+        json({ ok: false })
+    else
+        tips.to_json
+    end
+end
+
 #tipsを作るルーティング
 post '/tips/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
@@ -151,6 +162,17 @@ get '/questions/:user_id' do
     else
         status 400
         json({ ok: false })
+    end
+end
+
+#カテゴリーでQuestionsを絞って返すルーティング
+get '/questions/category/:category_id' do
+    questions = Question.find(Refer.find_by(category_id: params[:category_id], c_type: "q").post_id)
+    if questions.empty?
+        status 204
+        json({ ok: false })
+    else
+        tips.to_json
     end
 end
 
@@ -307,6 +329,16 @@ end
 # Category
 # ----------------
 
+#カテゴリー一覧を返す
+get '/category/all' do
+    categories = Category.all
+    if categories.empty?
+        status 204
+        json({ ok: false })
+    else
+        categories.to_json
+    end
+end
 # カテゴリーを登録
 def write_category(question_id, contents, type)
     if contents == nil
