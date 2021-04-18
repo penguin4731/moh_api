@@ -18,11 +18,17 @@ end
 
 not_found do
     status 404
+    json({ ok:false })
 end
 
 error do
     status 500
+    json({ ok:false })
 end
+
+# ----------------
+# Tips
+# ----------------
 
 #全てのtipsを返すルーティング
 get '/tips/all' do
@@ -89,6 +95,10 @@ post '/tips/like/:user_id' do
         json({ ok: false })
     end
 end
+
+# ----------------
+# Questions
+# ----------------
 
 #questionsを全て返す
 get '/questions/all' do
@@ -174,6 +184,20 @@ post '/questions/answer/create/:user_id' do
     end
 end
 
+#ベストアンサーを作るルーティング
+post '/questions/bestanswer/create/:question_id' do
+    question = Question.find_by(id: params[:question_id])
+    question.update(
+        bestanswer_id: params[:answer_id]
+    )
+    status 200
+    json({ ok: true })
+end
+
+# ----------------
+# User
+# ----------------
+
 #usersを作るルーティング
 post '/user/create' do
     user = User.find_by(firebase_uid: params[:firebase_uid])
@@ -192,6 +216,20 @@ post '/user/create' do
     json({ ok: true })
 end
 
+# firebaseのUIDからuserIDを探す
+def firebase_uid_to_uid(firebase_uid)
+    user = User.find_by(firebase_uid: firebase_uid)
+    if user != nil
+        return user.id
+    else
+        return nil
+    end
+end
+
+# ----------------
+# Test
+# ----------------
+
 # テスト用
 get '/test/:content' do
     status 200
@@ -203,15 +241,9 @@ post '/test' do
     json({ ok: true, params: params })
 end
 
-# firebaseのUIDからuserIDを探す
-def firebase_uid_to_uid(firebase_uid)
-    user = User.find_by(firebase_uid: firebase_uid)
-    if user != nil
-        return user.id
-    else
-        return nil
-    end
-end
+# ----------------
+# User name
+# ----------------
 
 # get user name
 def add_user_name(contents)
@@ -234,6 +266,10 @@ def user_name(id)
     end
 end
 
+# ----------------
+# Category
+# ----------------
+
 # カテゴリーを登録
 def write_category(question_id, contents)
     if contents == nil
@@ -241,7 +277,6 @@ def write_category(question_id, contents)
     end
     print(question_id.to_s, contents.to_json)
 end
-
 
 
 def category_check(question_id, categories_input)
