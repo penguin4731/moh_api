@@ -77,27 +77,36 @@ end
 
 #likesを作る
 post '/tips/like/:user_id' do
-    if firebase_uid_to_uid(params[:user_id])
-        user_id = firebase_uid_to_uid(params[:user_id])
-        like = Like.find_by(id: params[:id])
-        if like.nil?
-            Like.create(
+    if user_id = firebase_uid_to_uid(params[:user_id])
+        if like = Favorite.find_by(tips_id: params[:tips_id])
+            like.update(
+                good: !like.good
+            )
+        else
+            Favorite.create(
                 user_id: user_id,
                 tips_id: params[:tips_id],
                 good: true
             )
-            status 200
-            json({ ok: true })
-        else
-            like.update(
-                good: !good
-            )
         end
+        status 200
+        json({ ok: true })
     else
         status 400
         json({ ok: false })
     end
 end
+
+# いいね押したか押してないか
+get '/tips/like/:tips_id' do
+    if tips = Tips.find(tips_id)
+        
+    else
+        
+    end
+end
+
+# いいねの数
 
 # ----------------
 # Questions
