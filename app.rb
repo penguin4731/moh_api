@@ -56,6 +56,16 @@ get '/tips/:user_id' do
     end
 end
 
+#カテゴリーでTipsを絞って返すルーティング
+get '/tips/:category_id' do
+    tips = Category.find_by(id: params[:category_id]).tips
+    if tips.empty?
+        status 204
+    else
+        tips.to_json
+    end
+end
+
 #tipsを作るルーティング
 post '/tips/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
