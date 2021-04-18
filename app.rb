@@ -61,6 +61,7 @@ get '/tips/category/:category_id' do
     tips = Tips.find(Refer.find_by(category_id: params[:category_id], c_type: "t").post_id)
     if tips.empty?
         status 204
+        json({ ok: false })
     else
         tips.to_json
     end
@@ -143,6 +144,7 @@ get '/questions/category/:category_id' do
     questions = Question.find(Refer.find_by(category_id: params[:category_id], c_type: "q").post_id)
     if questions.empty?
         status 204
+        json({ ok: false })
     else
         tips.to_json
     end
@@ -298,6 +300,7 @@ get '/category/all' do
     categories = Category.all
     if categories.empty?
         status 204
+        json({ ok: false })
     else
         categories.to_json
     end
