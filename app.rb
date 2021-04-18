@@ -193,6 +193,8 @@ post '/questions/bestanswer/create/:question_id' do
     question.update(
         bestanswer_id: params[:answer_id]
     )
+    status 200
+    json({ ok: true })
 end
 #usersを作るルーティング
 post '/user/create' do
