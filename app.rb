@@ -58,7 +58,7 @@ end
 
 #カテゴリーでTipsを絞って返すルーティング
 get '/tips/category/:category_id' do
-    tips = Tips.find(Refer.find_by(category_id: params[:category_id], c_type: "t").post_id)
+    tips = Tip.find(Refer.find_by(category_id: params[:category_id], c_type: "t").post_id)
     if tips.empty?
         status 204
         json({ ok: false })
