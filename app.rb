@@ -37,6 +37,7 @@ get '/tips/all' do
         status 204
     else
         tips = add_user_name(tips)
+        tips = add_category(tips, "t")
         tips.to_json
     end
 end
@@ -47,6 +48,7 @@ get '/tips/:user_id' do
         user_id = firebase_uid_to_uid(params[:user_id])
         tips = Tips.where(user_id: user_id)
         tips = add_user_name(tips)
+        tips = add_category(tips, "t")
         tips.to_json
     else
         status 400
@@ -59,11 +61,12 @@ post '/tips/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
         print(user_id, params[:comment], params[:title])
-        Tip.create(
+        created = Tip.create(
             user_id: user_id,
             comment: params[:comment],
             title: params[:title]
         )
+        write_category(created.id, params[:categories], "q")
         status 200
         json({ ok: true })
     else
