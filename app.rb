@@ -140,7 +140,7 @@ end
 
 #カテゴリーでQuestionsを絞って返すルーティング
 get '/questions/category/:category_id' do
-    questions = Category.find_by(id: params[:category_id]).questions
+    questions = Category.find_by(id: params[:category_id]).questions 
     if questions.empty?
         status 204
     else
