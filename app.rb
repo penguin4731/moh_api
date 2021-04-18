@@ -152,14 +152,14 @@ post '/questions/create/:user_id' do
     end
 end
 
-#answerテーブルを作成するルーティング
+# answerテーブルを返す
 get '/questions/answer/:question_id' do
     answers = Answer.find_by(question_id: params[:question_id])
     answers.to_json
 end
 
 
-#answerを作るルーティング
+# answerを作るルーティング
 post '/questions/answer/create/:user_id' do
     if firebase_uid_to_uid(params[:user_id])
         user_id = firebase_uid_to_uid(params[:user_id])
@@ -307,7 +307,9 @@ def create_category_list(question_id)
         return
     end
     for category in categories_d do
-        category_output = category_output + ',' + search_category_name(category.category_id)
+        if search_category_name(category.category_id) != nil
+            category_output = category_output + ',' + search_category_name(category.category_id)
+        end
     end
     return category_output.slice!(1,1000000000000000)
 end
