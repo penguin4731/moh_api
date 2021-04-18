@@ -283,7 +283,8 @@ def write_category(question_id, contents)
         end
         Refer.create(
             category_id: check_content.id,
-            post_id: question_id.to_i
+            post_id: question_id.to_i,
+            type: params[:type]
         )
     end
 end
