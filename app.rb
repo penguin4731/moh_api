@@ -183,8 +183,13 @@ end
 
 # answerテーブルを返す
 get '/questions/answer/:question_id' do
-    answers = Answer.find_by(question_id: params[:question_id])
-    answers.to_json
+    if answers = Answer.find_by(question_id: params[:question_id])
+        status 200
+        answers.to_json
+    else
+        status 204
+        json({ ok: false, status: 204})
+    end
 end
 
 
