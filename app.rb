@@ -184,6 +184,7 @@ end
 # answerテーブルを返す
 get '/questions/answer/:question_id' do
     if answers = Answer.find_by(question_id: params[:question_id])
+        answers = add_user_name(answers)
         status 200
         answers.to_json
     else
